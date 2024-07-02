@@ -1,4 +1,3 @@
-# input= "123+4-5+81"
 EOF,INTEGER,PLUS,MINUS,MULT,DIV="EOF","INTEGER","PLUS","MINUS","MULT","DIV"
 class Token():
     def __init__(self,value,type):
@@ -86,25 +85,30 @@ class Intepreter():
         token=self.current_token
         self.eat(INTEGER)
         return token.value
-
-
-    def expr(self):
+    
+    def term(self):
         result=self.factor()
-        while self.current_token.type in (MULT,PLUS,DIV,MULT):
+        while self.current_token.type in (MULT,DIV):
             op=self.current_token
-
-            if op.type==PLUS:
-                self.eat(PLUS)
-                result+=self.factor()
-            elif op.type==MINUS:
-                self.eat(MINUS)
-                result-=self.factor()
-            elif op.type==MULT:
+            if op.type==MULT:
                 self.eat(MULT)
                 result=result*self.factor()
             elif op.type==DIV:
                 self.eat(DIV)
                 result=result/self.factor()
+        return result
+
+    def expr(self):
+        result=self.term()
+        while self.current_token.type in (PLUS,MINUS):
+            op=self.current_token
+
+            if op.type==PLUS:
+                self.eat(PLUS)
+                result+=self.term()
+            elif op.type==MINUS:
+                self.eat(MINUS)
+                result-=self.term()
         return result
         # op=self.current_token
         # if op.type==PLUS:
